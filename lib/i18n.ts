@@ -1,0 +1,41 @@
+export type Locale='ja'|'en';
+export function detectLocale(languages:readonly string[]):Locale{return languages[0]?.toLowerCase().split(/[-_]/)[0]==='ja'?'ja':'en'}
+export const english:Record<string,string>={
+ '閉じる':'Close','テーマ、取り組むこと、週の時間（0.5〜40h）を入力してください。':'Enter a theme, an activity, and weekly hours (0.5–40).',
+ 'テーマを編集':'Edit theme','今週のテーマを追加':'Add a theme for this week','なりたい自分・重点的に取り組みたいこと':'Who you want to be / your focus',
+ '例：英語で自信を持って話せる自分':'e.g. Become a confident English speaker','今週、具体的に取り組むこと':'What you will work on this week','例：英語で話す練習をする':'e.g. Practice speaking English',
+ '週に使いたい時間（h）':'Hours per week','優先度':'Priority','1：最優先':'1: Top priority','2：大切':'2: Important','3：余裕があれば':'3: If time allows',
+ '必要なエナジー':'Energy needed','高：集中力を使う':'High: Focused effort','中：ほどよく取り組む':'Medium: Steady effort','低：軽く取り組める':'Low: Light effort',
+ 'テーマを保存':'Save theme','キャンセル':'Cancel','予定を編集':'Edit event','予定を追加':'Add event','予定名':'Event name','例：英語の会話練習':'e.g. English conversation practice',
+ '日付':'Date','開始時刻':'Start time','終了時刻':'End time','カテゴリー':'Category','つながるテーマ':'Linked theme','指定しない・固定予定':'None / fixed event','保存する':'Save',
+ 'この予定を削除しますか？':'Delete this event?','削除':'Delete','この端末に保存できませんでした。ブラウザのストレージ設定や空き容量を確認してください。':'Could not save on this device. Check browser storage permissions and available space.',
+ '前回の自動配分を作り直します。編集した予定・手動の予定は残します。':'Replace the previous automatic schedule? Edited and manually added events will be kept.',
+ '1週間のプランを読み込んでいます…':'Loading your week…','大切にしたいことから、':'Start with what matters.','1週間をつくる。':'Make room in your week.',
+ '今週のテーマ':'This week’s themes','優先度 ':'Priority ','週 ':'Weekly ','編集':'Edit','テーマを削除しますか？カレンダーの予定は残ります。':'Delete this theme? Calendar events will remain.',
+ '今週、何を大切にしたい？':'What matters to you this week?','なりたい自分や、取り組みたいことを':'Add who you want to be','1つから追加しましょう。':'or one thing you want to work on.',
+ '＋ なりたい自分・取り組みたいこと':'+ Add a theme or aspiration','使える時間とエナジー':'Available time & energy',
+ '仕事・睡眠以外の、取り組みに使える時間帯を設定します。追加済みの予定を避けて配置します。':'Set time windows outside work and sleep. New activities will fit around existing events.',
+ '平日：開始':'Weekdays: from','平日：終了':'Weekdays: until','土日：開始':'Weekends: from','土日：終了':'Weekends: until',
+ '集中しやすい時間帯':'When you focus best','朝：6〜12時':'Morning: 06:00–12:00','昼：12〜18時':'Afternoon: 12:00–18:00','夜：18〜24時':'Evening: 18:00–24:00',
+ '時間とエナジーで配分する ↗':'Plan with time & energy ↗','入力条件に沿う自動配分です。':'Scheduling follows your settings.',
+ 'AIによる活動の分解・対話調整は未接続です。':'AI activity planning and chat are not connected yet.','なりたい自分に、時間を。':'Make time for who you want to be.',
+ 'テーマを決める。1週間に配置する。自分のペースに整える。':'Choose your focus. Plan your week. Find your own pace.',
+ '前の週':'Previous week','次の週':'Next week','今週':'This week','日':'Day','週':'Week','日表示で編集・週表示で全体を確認':'Edit by day · See the whole week',
+ '1週間のプラン':'Your weekly plan','h 予定あり · 1目盛り30分':'h planned · 30-minute slots','＋ 予定を追加':'+ Add event',
+ 'まだ予定のない、あなたの1週間。':'A fresh week, ready for you.','テーマから配分するか、空いている時間に予定を追加しましょう。':'Schedule your themes, or tap an open time to add an event.',
+ '空き枠をタップして追加。予定をタップして編集。':'Tap an open slot to add. Tap an event to edit.','時間':'Time','時間帯が未設定の予定':'Events without a time','時間帯を設定':'Set time',
+ '固定予定も「予定を追加」から登録できます。編集した予定は、再配分しても保持されます。':'Add fixed commitments with “Add event”. Edited events stay in place when you reschedule.',
+ 'このブラウザに自動保存されます。端末間の同期はありません。':'Saved automatically in this browser. No cross-device sync.',
+ '仕事':'Work','学習・制作':'Learning & creating','睡眠・休息':'Sleep & rest','生活':'Daily life','人との時間':'People','運動・趣味':'Exercise & hobbies','余白':'Open time',
+ '集中':'Focus','ふつう':'Steady','軽め':'Light',
+ '使える時間帯の終了は、開始より後に設定してください。':'Set the end of your available time after the start.',
+ '日付と開始時刻を確認してください。':'Check the date and start time.','予定名を入力してください。':'Enter an event name.',
+ '終了時刻は開始より後、24:00までに設定してください。':'Set the end after the start, no later than 24:00.',
+ 'ほかの予定と時間が重なっています。':'This overlaps with another event.','1日の予定は合計24時間以内にしてください。':'Keep each day’s total within 24 hours.',
+ '保存データを読み込めませんでした。元のデータは上書きしていません。':'Could not read saved data. The original data has not been overwritten.',
+ 'placed':'Added {count} events. Tap an event to adjust it.','unplaced':'Could not fit within your time and energy settings:',
+ 'remaining':'{title}: {hours}h remaining','spare':'At least 30% of your available free time is left open.',
+ 'addAt':'Add an event on {date} at {time}','eventAt':'{title}, {start}–{end}'
+};
+const japanese:Record<string,string>={placed:'{count}件の予定を配置しました。タップして調整できます。',unplaced:'時間やエナジーの条件に収まらなかった分：',remaining:'{title}：残り{hours}h',spare:'使える空き時間の30%以上を、余白として残しています。',addAt:'{date} {time}に予定を追加',eventAt:'{title} {start}〜{end}'};
+export function translate(locale:Locale,key:string,values:Record<string,string|number>={}){const text=(locale==='en'?english[key]:japanese[key])??key;return text.replace(/\{(\w+)\}/g,(match,name)=>values[name]===undefined?match:String(values[name]))}
