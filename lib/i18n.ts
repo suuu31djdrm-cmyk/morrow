@@ -1,6 +1,7 @@
 export type Locale='ja'|'en';
 export function detectLocale(languages:readonly string[]):Locale{return languages[0]?.toLowerCase().split(/[-_]/)[0]==='ja'?'ja':'en'}
 export const english:Record<string,string>={
+ 'scheduleWeekLabel':'Schedule for','nextWeekLabel':'Next week','selectedWeekLabel':'Selected week','autoScheduleHint':'Saving automatically adds activities to the selected week. Existing events stay in place.','saveAndSchedule':'Save & schedule','autoScheduled':'Theme saved. Added {count} events to your calendar.','adjustAvailability':'Check your available hours and focus time, or choose next week.','savedButUnscheduled':'Theme saved, but scheduling could not finish.','rescheduleWeek':'Rebalance this week ↗',
  'introTitle':'Welcome to Morrow','skipIntro':'Skip',
  '閉じる':'Close','テーマ、取り組むこと、週の時間（0.5〜40h）を入力してください。':'Enter a theme, an activity, and weekly hours (0.5–40).',
  'テーマを編集':'Edit theme','今週のテーマを追加':'Add a theme for this week','なりたい自分・重点的に取り組みたいこと':'Who you want to be / your focus',
@@ -38,5 +39,5 @@ export const english:Record<string,string>={
  'remaining':'{title}: {hours}h remaining','spare':'At least 30% of your available free time is left open.',
  'addAt':'Add an event on {date} at {time}','eventAt':'{title}, {start}–{end}'
 };
-const japanese:Record<string,string>={introTitle:'Morrowへようこそ',skipIntro:'スキップ',placed:'{count}件の予定を配置しました。タップして調整できます。',unplaced:'時間やエナジーの条件に収まらなかった分：',remaining:'{title}：残り{hours}h',spare:'使える空き時間の30%以上を、余白として残しています。',addAt:'{date} {time}に予定を追加',eventAt:'{title} {start}〜{end}'};
+const japanese:Record<string,string>={scheduleWeekLabel:'配分する週',nextWeekLabel:'来週',selectedWeekLabel:'選択中の週',autoScheduleHint:'保存すると、選んだ週のカレンダーに自動で配分されます。ほかの予定は動かしません。',saveAndSchedule:'保存してカレンダーに配分',autoScheduled:'目標を保存し、カレンダーに{count}件の予定を追加しました。',adjustAvailability:'使える時間・集中しやすい時間帯を見直すか、来週を選んでみてください。',savedButUnscheduled:'目標は保存しましたが、配分できませんでした。',rescheduleWeek:'今週の配分を見直す ↗',introTitle:'Morrowへようこそ',skipIntro:'スキップ',placed:'{count}件の予定を配置しました。タップして調整できます。',unplaced:'時間やエナジーの条件に収まらなかった分：',remaining:'{title}：残り{hours}h',spare:'使える空き時間の30%以上を、余白として残しています。',addAt:'{date} {time}に予定を追加',eventAt:'{title} {start}〜{end}'};
 export function translate(locale:Locale,key:string,values:Record<string,string|number>={}){const text=(locale==='en'?english[key]:japanese[key])??key;return text.replace(/\{(\w+)\}/g,(match,name)=>values[name]===undefined?match:String(values[name]))}

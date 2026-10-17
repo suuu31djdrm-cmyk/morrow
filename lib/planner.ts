@@ -25,17 +25,23 @@ export function validatePlan(plan:Plan,others:Plan[]){
  if(same.some(p=>p.time&&st<minutes(p.time)+p.hours*60&&end>minutes(p.time)))return 'ほかの予定と時間が重なっています。';
  if(sumHours(same)+plan.hours>24+1e-8)return '1日の予定は合計24時間以内にしてください。';return '';
 }
-export function scheduleWeek(themes:Theme[],plans:Plan[],a:Availability,week:string){
+export function scheduleWeek(themes:Theme[],plans:Plan[],a:Availability,week:string,options:{preserveExisting?:boolean;now?:Date}={}){
  const error=availabilityError(a);if(error)throw new Error(error);
- const kept=plans.filter(p=>!inWeek(p.date,week)||p.origin!=='suggestion');const generated:Plan[]=[],unplaced:{title:string;hours:number}[]=[];
+ const kept=options.preserveExisting?plans:plans.filter(p=>!inWeek(p.date,week)||p.origin!=='suggestion');const generated:Plan[]=[],unplaced:{title:string;hours:number}[]=[];
  const peak={morning:[360,720],afternoon:[720,1080],evening:[1080,1440]}[a.peak];
  for(const theme of themes.filter(t=>t.week===week).slice().sort((a,b)=>a.priority-b.priority)){
  let remain=Math.max(0,Math.round((theme.hours-sumHours(kept.filter(p=>inWeek(p.date,week)&&p.themeId===theme.id)))*60));const usedDays:Record<number,number>={};
  while(remain>=30){const choices:{date:string;day:number;start:number;length:number;score:number}[]=[];
- for(let day=0;day<7;day++){const date=dateAt(week,day),kind=day<5?'weekday':'weekend',start=minutes(a[`${kind}Start`]),end=minutes(a[`${kind}End`]);const busy=[...kept,...generated].filter(p=>p.date===date);const allocated=generated.filter(p=>p.date===date).reduce((s,p)=>s+p.hours*60,0);const manualOccupied=kept.filter(p=>p.date===date&&p.time).reduce((s,p)=>s+Math.max(0,Math.min(end,minutes(p.time)+p.hours*60)-Math.max(start,minutes(p.time))),0);const budget=Math.floor(Math.max(0,end-start-manualOccupied)*.7/30)*30;
+ for(let day=0;day<7;day++){const date=dateAt(week,day),kind=day<5?'weekday':'weekend',end=minutes(a[`${kind}End`]);if(options.now&&date<dateKey(options.now))continue;const start=Math.max(minutes(a[`${kind}Start`]),options.now&&date===dateKey(options.now)?options.now.getHours()*60+options.now.getMinutes():0);const busy=[...kept,...generated].filter(p=>p.date===date);const allocated=generated.filter(p=>p.date===date).reduce((s,p)=>s+p.hours*60,0);const manualOccupied=kept.filter(p=>p.date===date&&p.time).reduce((s,p)=>s+Math.max(0,Math.min(end,minutes(p.time)+p.hours*60)-Math.max(start,minutes(p.time))),0);const budget=Math.floor(Math.max(0,end-start-manualOccupied)*.7/30)*30;
  for(let m=Math.ceil(start/30)*30;m+30<=end;m+=30){let length=Math.floor(Math.min(remain,theme.energy==='high'?60:90,budget-allocated)/30)*30;while(length>=30&&busy.some(p=>p.time&&m<minutes(p.time)+p.hours*60&&m+length>minutes(p.time)))length-=30;if(length<30||m+length>end||sumHours(busy)+length/60>24)continue;const isPeak=m>=peak[0]&&m+length<=peak[1];if(theme.energy==='high'&&!isPeak)continue;const score=(usedDays[day]||0)*500+allocated*2+day*3+(theme.energy==='low'&&isPeak?90:0)+(theme.energy==='medium'&&!isPeak?20:0);choices.push({date,day,start:m,length,score});}}
  if(!choices.length)break;choices.sort((a,b)=>a.score-b.score||a.start-b.start);const c=choices[0];generated.push({id:uid(),date:c.date,time:clock(c.start),hours:c.length/60,title:theme.activity,cat:'side',energy:theme.energy,themeId:theme.id,origin:'suggestion'});usedDays[c.day]=(usedDays[c.day]||0)+1;remain-=c.length;
  }if(remain>0)unplaced.push({title:theme.title,hours:remain/60});
  }return {plans:[...kept,...generated],count:generated.length,unplaced};
 }
 export function eventLayout(plans:Plan[]){const sorted=plans.filter(p=>p.time).slice().sort((a,b)=>minutes(a.time)-minutes(b.time));const groups:{items:Plan[];end:number}[]=[];for(const p of sorted){const start=minutes(p.time),end=start+p.hours*60;let g=groups.at(-1);if(!g||start>=g.end){g={items:[],end};groups.push(g)}g.items.push(p);g.end=Math.max(g.end,end)}return groups.flatMap(g=>{const ends:number[]=[];const items=g.items.map(p=>{let lane=ends.findIndex(end=>end<=minutes(p.time));if(lane<0)lane=ends.length;ends[lane]=minutes(p.time)+p.hours*60;return {plan:p,lane}});return items.map(item=>({...item,lanes:ends.length}))})}
+
+export function scheduleTheme(theme:Theme,plans:Plan[],availability:Availability,now:Date){
+ // Replace only this theme's untouched suggestions. Manual edits and other themes stay fixed.
+ const kept=plans.filter(p=>!(p.themeId===theme.id&&p.origin==='suggestion'));
+ return scheduleWeek([theme],kept,availability,theme.week,{preserveExisting:true,now});
+}
