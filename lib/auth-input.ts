@@ -1,4 +1,4 @@
 import {z} from 'zod';
-const identifier=z.email().max(254);
-export const sendCodeSchema=z.object({intent:z.enum(['login','signup']),identifier,captchaToken:z.string().max(4096).optional()}).strict();
-export const verifyCodeSchema=z.object({identifier,token:z.string().regex(/^\d{6,8}$/)}).strict();
+const credentials={identifier:z.email().max(254),password:z.string().min(1).max(128),captchaToken:z.string().max(4096).optional()};
+export const loginSchema=z.object(credentials).strict();
+export const signupSchema=z.object({...credentials,password:z.string().min(12).max(128).refine(value=>new TextEncoder().encode(value).length<=72)}).strict();

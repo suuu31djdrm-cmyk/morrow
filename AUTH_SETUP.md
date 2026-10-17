@@ -1,57 +1,51 @@
-# Morrow メール認証の設定
+# Morrow メールアドレス＋パスワード認証
 
-新規登録とログインは、メールアドレス＋ワンタイムコードだけです。パスワード・氏名・電話番号は求めません。新規登録だけ `shouldCreateUser: true` とし、ログインからはアカウントを新規作成しません。メールの確認が成功してからアプリに入ります。
+新規登録とログインは、メールアドレスとパスワードだけです。Auth0・Google・LINE・SMS・ワンタイムコードの設定は不要です。Supabase Authの `signUp` と `signInWithPassword` をサーバーから使用します。
 
-## 個人用Supabaseプロジェクト
+## 現在の状態
 
-Morrow専用の個人プロジェクトを使用してください。会社のプロジェクトは使用しません。現在、接続から利用可能なプロジェクトは0件で、本番設定・メール配信・RLSの実環境検証はまだ行えていません。
+個人用Morrowプロジェクト `szsuwouwdugnigufojpn` にプラン保存テーブルを作成済みです。RLSと所有者限定のSELECT/INSERT/UPDATE/DELETEポリシー、未ログイン役への権限がないことをSQLで確認し、Security Advisorの指摘は0件でした。実ユーザー2人でのデータ分離・実ログインは未検証です。
 
-1. 個人用のMorrowプロジェクトを作成します。
-2. SQL Editorで `supabase/migrations/202610170001_planner_states.sql` を実行します。アプリDBにはユーザーIDとプランだけを保存し、メールアドレスは複製しません。
-3. AuthでEmailプロバイダーと新規登録、メール確認を有効にします。
-4. **Confirm signupとMagic Linkの両方**のメールテンプレートに、下の `{{ .Token }}` を含めます。両方に同じテンプレートを利用できます。
-5. OTPの桁数を6〜8桁、有効期限を例として10分、送信間隔を60秒以上に設定し、検証・IPごとのレート制限を設定します。
-6. 本番用SMTPを設定します。標準メール送信には宛先・回数の制限があるため、公開利用には独自SMTPが必要です。
-7. Site URLをMorrowの本番HTTPS URLに設定します。この実装はコード入力方式のため、OAuthコールバックは不要です。
+## Supabase設定
 
-```html
-<h2>morrow.</h2>
-<p>確認コード / Your verification code</p>
-<p style="font-size:28px;font-weight:bold;letter-spacing:4px">{{ .Token }}</p>
-<p>このコードをMorrowの画面に入力してください。心当たりがない場合は、このメールを無視してください。</p>
-<p>Enter this code in Morrow. If you did not request it, ignore this email.</p>
-```
+Authentication → Sign In / Providersで、Emailと新規ユーザー登録を有効にします。パスワードの最低文字数を12に合わせます。アプリでも12文字以上・UTF-8で72バイト以内を検証します。
 
-## 不正送信対策
+**Confirm emailをオンにする場合**：登録後の確認メールが必要です。標準メール送信はSupabaseプロジェクトのチームメンバー宛てに制限されるため、一般公開には独自SMTPを設定してください。Confirm signupメールはリンク形式のまま使用します。以前のコード用テンプレートへ変更した場合は `{{ .ConfirmationURL }}` の確認リンクに戻してください。Magic Linkテンプレートはこの認証方式では使用しません。
 
-Cloudflare TurnstileでMorrowの本番ホストを登録します。公開サイトキーをVercelの `TURNSTILE_SITE_KEY` へ、秘密キーをSupabaseのAuth CAPTCHA設定へ保存して検証を有効にします。本番のコード送信にはCAPTCHAを必須としています。Supabase側のレート制限とSMTPの送信上限も設定してください。
+メール確認が必要な登録では、セッションがない間はアプリに入れず、確認メールの案内を表示します。確認済みアカウントへの重複登録も同じ案内にし、アカウントの存在を明示しません。
+
+**Confirm emailをオフにする場合**：メール配信なしで登録後すぐログインできます。ただしメールアドレスの所有者は検証されません。個人用試作でメール送信を省く場合に選べる設定です。公開時の推奨はメール確認オンです。アプリからこの設定を勝手に変更しません。
+
+Authentication → URL Configuration：
+
+- Site URL：`https://morrow-ten-nu.vercel.app`
+- Redirect URLs：`https://morrow-ten-nu.vercel.app/api/auth/callback`
+
+固定オリジンへのPKCEコールバックだけを使用し、入力された任意の戻り先URLは受け付けません。実際の公開URLを変える場合は環境変数とここを両方変更します。
 
 ## Vercel環境変数
 
-`.env.example` を参照してMorrowのプロジェクトに設定し、再デプロイします。秘密鍵をチャットやGitHubへ貼らないでください。
+MorrowプロジェクトのSettings → Environment Variablesに設定し、再デプロイします。
 
 | 変数 | 値 |
 | --- | --- |
-| `SUPABASE_URL` | 個人用MorrowプロジェクトURL |
-| `SUPABASE_PUBLISHABLE_KEY` | publishableキー。service_roleは使わない |
-| `AUTH_APP_ORIGIN` | 本番HTTPSオリジン。末尾にパスを含めない |
-| `AUTH_EMAIL_ENABLED` | メール・テンプレート・CAPTCHA設定後 `true` |
-| `TURNSTILE_SITE_KEY` | 公開サイトキー。秘密キーはSupabaseだけに保存 |
-| `ALLOW_LOCAL_DEMO` | 通常 `false`。認証未設定時に端末内デモを明示的に使う場合だけ `true` |
+| `SUPABASE_URL` | 個人用MorrowプロジェクトのURL |
+| `SUPABASE_PUBLISHABLE_KEY` | publishableキー。service_roleを使わない |
+| `AUTH_APP_ORIGIN` | `https://morrow-ten-nu.vercel.app` |
+| `AUTH_EMAIL_ENABLED` | `true` |
+| `ALLOW_LOCAL_DEMO` | `false` |
+| `TURNSTILE_SITE_KEY` | 任意。CAPTCHA使用時だけ設定 |
 
-## 公開前の動作確認
+CAPTCHAを使う場合は秘密キーと検証の有効化をSupabase側でも設定します。公開キーがある場合、アプリは登録・ログインにCAPTCHAトークンを要求します。CAPTCHA未使用の場合もSupabase側のログイン・登録のレート制限は設定してください。
 
-新しいメールアドレスで新規登録→コード入力→プラン保存→ログアウト→同じメールでログイン→プラン復元を確認します。未登録メールでのログインからは新規ユーザーが作成されないこと、誤ったコード・期限切れ・再送制限・セッション失効を確認してください。
+## セキュリティと確認
 
-異なる2ユーザーで、自分以外のプランを読み書きできないことを実環境で検証します。単体テストだけでは本番のメールやRLSの検証になりません。設定完了まではPRをdraftのまま維持し、稼働中のmainに認証必須の変更を反映しません。
+- パスワードは認証リクエストでSupabase Authへ渡します。アプリのDB・localStorage・ログには保存しません。メールもプランDBに複製しません。
+- セッションはHttpOnly・SameSite=Lax・本番SecureのCookieで管理します。
+- データAPIは毎回ユーザーをサーバーで検証し、そのIDを所有者とします。RLSでも制限します。
+- 更新APIにはOrigin検証、型・サイズの制限、ページにはnonce付きCSPなどを設定しています。
+- 新規登録、ログアウト、再ログイン、プラン復元、誤ったパスワード、メール未確認、別ユーザーの分離を実機で検証してからPRを公開します。
+- パスワード再設定画面は今回の実装範囲に含めていません。一般公開前に追加が必要です。
+- 旧ブラウザデータをログイン先へ自動取り込みしません。同時編集は最後の保存が優先されます。
 
-## データの扱い
-
-- セッションはHttpOnly・SameSite=Lax・本番SecureのCookieで管理し、トークンをlocalStorageへ保存しません。
-- データAPIは毎回サーバーでユーザーを検証し、そのIDから所有者を決めます。RLSでも自分の行だけを許可します。
-- Origin検証、入力サイズ・型の制限、nonce付きCSP、埋め込み防止ヘッダーを設定しています。
-- コードやメールをアプリのログ・プランDBに保存しません。認証サービスにはメールアドレスが保存されます。
-- 認証未設定時、保護APIは503で拒否します。ブラウザ内の旧データをログインしたアカウントへ自動取り込みしません。
-- 複数端末の同時編集は最後の保存が優先されます。
-
-公式資料： https://supabase.com/docs/guides/auth/auth-email-passwordless
+公式資料： https://supabase.com/docs/guides/auth/passwords
