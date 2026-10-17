@@ -1,6 +1,7 @@
 export type Locale='ja'|'en';
 export function detectLocale(languages:readonly string[]):Locale{return languages[0]?.toLowerCase().split(/[-_]/)[0]==='ja'?'ja':'en'}
 export const english:Record<string,string>={
+ 'introTitle':'Welcome to Morrow','skipIntro':'Skip',
  '閉じる':'Close','テーマ、取り組むこと、週の時間（0.5〜40h）を入力してください。':'Enter a theme, an activity, and weekly hours (0.5–40).',
  'テーマを編集':'Edit theme','今週のテーマを追加':'Add a theme for this week','なりたい自分・重点的に取り組みたいこと':'Who you want to be / your focus',
  '例：英語で自信を持って話せる自分':'e.g. Become a confident English speaker','今週、具体的に取り組むこと':'What you will work on this week','例：英語で話す練習をする':'e.g. Practice speaking English',
@@ -37,5 +38,5 @@ export const english:Record<string,string>={
  'remaining':'{title}: {hours}h remaining','spare':'At least 30% of your available free time is left open.',
  'addAt':'Add an event on {date} at {time}','eventAt':'{title}, {start}–{end}'
 };
-const japanese:Record<string,string>={placed:'{count}件の予定を配置しました。タップして調整できます。',unplaced:'時間やエナジーの条件に収まらなかった分：',remaining:'{title}：残り{hours}h',spare:'使える空き時間の30%以上を、余白として残しています。',addAt:'{date} {time}に予定を追加',eventAt:'{title} {start}〜{end}'};
+const japanese:Record<string,string>={introTitle:'Morrowへようこそ',skipIntro:'スキップ',placed:'{count}件の予定を配置しました。タップして調整できます。',unplaced:'時間やエナジーの条件に収まらなかった分：',remaining:'{title}：残り{hours}h',spare:'使える空き時間の30%以上を、余白として残しています。',addAt:'{date} {time}に予定を追加',eventAt:'{title} {start}〜{end}'};
 export function translate(locale:Locale,key:string,values:Record<string,string|number>={}){const text=(locale==='en'?english[key]:japanese[key])??key;return text.replace(/\{(\w+)\}/g,(match,name)=>values[name]===undefined?match:String(values[name]))}
