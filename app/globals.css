@@ -37,20 +37,20 @@ button:active:not(.time-slot){transform:scale(.97)}
 .nature-intro{position:fixed;inset:0;z-index:100;background:#0c1811;display:grid;place-items:center;isolation:isolate;animation:intro-exit 4.8s linear both}
 .nature-intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 47%,#2b503333,transparent 58%);pointer-events:none}
 .intro-skip{position:absolute;right:max(24px,env(safe-area-inset-right));top:max(23px,env(safe-area-inset-top));border:1px solid #668b73;border-radius:100px;background:#17291d;color:#e2eee6;padding:8px 18px;font-size:11px;z-index:3}
-.intro-center{text-align:center;position:relative;max-width:100%;width:460px;height:220px}
-.intro-landscape{position:absolute;inset:0;width:360px;max-width:90%;height:185px;margin:auto;animation:nature-sequence 4.8s ease-in-out both}
+.intro-center{text-align:center;position:absolute;inset:0;width:100%;height:100%;display:grid;place-items:center}
+.intro-landscape{position:absolute;inset:0;width:min(360px,calc(100vw - 48px));height:185px;margin:auto;animation:nature-sequence 4.8s ease-in-out both}
 .intro-landscape img{position:absolute;object-fit:contain}
-.intro-sun{position:absolute;width:46px;height:46px;border:1px solid #d5ddaa;border-radius:50%;top:12px;left:206px;background:#c8d89a12;animation:sun-rise 2s ease-out both}
-.intro-tree{bottom:13px;left:89px;transform-origin:50% 94%;animation:tree-sway 3s ease-in-out both}
+.intro-sun{position:absolute;width:46px;height:46px;border:1px solid #d5ddaa;border-radius:50%;top:12px;left:57.2%;background:#c8d89a12;animation:sun-rise 2s ease-out both}
+.intro-tree{bottom:13px;left:24.7%;transform-origin:50% 94%;animation:tree-sway 3s ease-in-out both}
 .intro-grass{bottom:8px;transform-origin:50% 100%;animation:grass-sway 3s ease-in-out both}
-.intro-grass-left{left:24px}.intro-grass-right{right:22px}
-.intro-rabbit{bottom:14px;right:89px;animation:rabbit-hop 2.1s .2s ease-in-out both}
-.intro-bird{top:18px;left:27px;animation:bird-pass 3s ease-in-out both}
-.intro-leaf{top:24px;right:24px;animation:leaf-drift 3s ease-in-out both}
-.intro-logo-stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:wordmark-reveal 1s 3.05s ease-out both}
+.intro-grass-left{left:6.7%}.intro-grass-right{right:6.1%}
+.intro-rabbit{bottom:14px;right:24.7%;animation:rabbit-hop 2.1s .2s ease-in-out both}
+.intro-bird{top:18px;left:7.5%;animation:bird-pass 3s ease-in-out both}
+.intro-leaf{top:24px;right:6.7%;animation:leaf-drift 3s ease-in-out both}
+.intro-logo-stage{position:absolute;inset:0;display:grid;place-items:center;animation:wordmark-reveal 1s 3.05s ease-out both}
 .intro-wordmark{font-size:clamp(48px,10vw,68px);line-height:1.2;letter-spacing:-3.8px;font-weight:650;color:#f1f6ef}
 .intro-wordmark span{color:#b4e7d0}
-.intro-tagline{margin-top:18px;font-size:9px;letter-spacing:3px;color:#c2d8c8;animation:tagline-reveal .6s 3.4s ease-out both}
+.intro-tagline{position:absolute;top:calc(50% + 57px);left:0;right:0;margin:0;font-size:9px;letter-spacing:3px;color:#c2d8c8;animation:tagline-reveal .6s 3.4s ease-out both}
 @keyframes nature-sequence{0%{opacity:0;transform:translateY(12px)}28%{opacity:1;transform:none}44%{opacity:1;transform:none}60%,100%{opacity:0;transform:translateY(-5px)}}
 @keyframes intro-exit{0%,92%{opacity:1}100%{opacity:0}}
 @keyframes sun-rise{from{transform:translateY(17px)}to{transform:none}}
@@ -61,5 +61,5 @@ button:active:not(.time-slot){transform:scale(.97)}
 @keyframes leaf-drift{0%{transform:translate(0,-8px) rotate(-16deg)}55%{transform:translate(-12px,10px) rotate(10deg)}100%{transform:translate(-6px,22px) rotate(-5deg)}}
 @keyframes wordmark-reveal{from{opacity:0;transform:translateY(7px);filter:blur(2px)}to{opacity:1;transform:none;filter:blur(0)}}
 @keyframes tagline-reveal{from{opacity:0}to{opacity:1}}
-@media(max-width:420px){.intro-landscape{width:310px;transform-origin:center}.intro-tagline{font-size:8px;letter-spacing:2.4px}}
+@media(max-width:420px){.intro-tagline{top:calc(50% + 48px);font-size:8px;letter-spacing:2.4px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.nature-intro{display:none!important}}
