@@ -9,7 +9,7 @@ export default function NatureIntro(){
   const media=window.matchMedia('(prefers-reduced-motion: reduce)');
   if(media.matches)return;
   try{if(sessionStorage.getItem('morrow-intro-seen')==='1')return;sessionStorage.setItem('morrow-intro-seen','1')}catch{/* The intro also works when session storage is unavailable. */}
-  setVisible(true);const timer=window.setTimeout(()=>setVisible(false),3200);
+  setVisible(true);const timer=window.setTimeout(()=>setVisible(false),4900);
   const reduce=()=>{if(media.matches)setVisible(false)};media.addEventListener('change',reduce);
   return()=>{window.clearTimeout(timer);media.removeEventListener('change',reduce)};
  },[]);
@@ -26,7 +26,6 @@ export default function NatureIntro(){
   <div className="intro-center">
    <div className="intro-landscape" aria-hidden="true">
     <span className="intro-sun"/>
-    <Image className="intro-mountains" src="/nature/mountains.png" alt="" width={360} height={132} priority/>
     <Image className="intro-tree" src="/nature/apple-tree.png" alt="" width={105} height={126} priority/>
     <Image className="intro-grass intro-grass-left" src="/nature/grass.png" alt="" width={60} height={72} priority/>
     <Image className="intro-grass intro-grass-right" src="/nature/grass-tall.png" alt="" width={64} height={80} priority/>
@@ -34,8 +33,8 @@ export default function NatureIntro(){
     <Image className="intro-bird" src="/nature/bird.png" alt="" width={40} height={38} priority/>
     <Image className="intro-leaf" src="/nature/leaf.png" alt="" width={22} height={28} priority/>
    </div>
-   <div className="intro-wordmark" aria-label="Morrow">mor<span>row.</span></div>
-   <p className="intro-tagline">A LITTLE GROWTH, EVERY DAY</p>
+   <div className="intro-logo-stage"><div className="intro-wordmark" aria-label="Morrow">mor<span>row.</span></div>
+   <p className="intro-tagline">A LITTLE GROWTH, EVERY DAY</p></div>
   </div>
  </div>
 }

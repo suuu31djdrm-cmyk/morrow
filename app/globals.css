@@ -33,31 +33,33 @@ button:active:not(.time-slot){transform:scale(.97)}
 @keyframes dialog-arrive{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
 @keyframes backdrop-arrive{from{opacity:0}to{opacity:1}}
 @keyframes details-arrive{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
-.nature-intro{position:fixed;inset:0;z-index:100;background:#0c1811;display:grid;place-items:center;isolation:isolate;animation:intro-exit 3.15s linear both}
+
+.nature-intro{position:fixed;inset:0;z-index:100;background:#0c1811;display:grid;place-items:center;isolation:isolate;animation:intro-exit 4.8s linear both}
 .nature-intro::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 47%,#2b503333,transparent 58%);pointer-events:none}
 .intro-skip{position:absolute;right:max(24px,env(safe-area-inset-right));top:max(23px,env(safe-area-inset-top));border:1px solid #668b73;border-radius:100px;background:#17291d;color:#e2eee6;padding:8px 18px;font-size:11px;z-index:3}
-.intro-center{text-align:center;position:relative;padding:20px;max-width:100%;width:460px}
-.intro-landscape{position:relative;width:360px;max-width:100%;height:185px;margin:0 auto 24px}
+.intro-center{text-align:center;position:relative;max-width:100%;width:460px;height:220px}
+.intro-landscape{position:absolute;inset:0;width:360px;max-width:90%;height:185px;margin:auto;animation:nature-sequence 4.8s ease-in-out both}
 .intro-landscape img{position:absolute;object-fit:contain}
-.intro-sun{position:absolute;width:46px;height:46px;border:1px solid #d5ddaa;border-radius:50%;top:12px;left:206px;background:#c8d89a12;animation:sun-rise 1.45s cubic-bezier(.2,.6,.2,1) both}
-.intro-mountains{bottom:7px;left:0;opacity:.55;animation:landscape-reveal 1s ease both}
-.intro-tree{bottom:13px;left:89px;transform-origin:50% 94%;animation:tree-sway 2.9s ease-in-out both}
-.intro-grass{bottom:8px;transform-origin:50% 100%;animation:grass-sway 2.7s ease-in-out both}
-.intro-grass-left{left:24px}.intro-grass-right{right:22px;animation-delay:.1s}
-.intro-rabbit{bottom:14px;right:89px;animation:rabbit-hop 1.25s .25s ease-in-out both}
-.intro-bird{top:18px;left:27px;animation:bird-pass 2.8s ease-in-out both}
-.intro-leaf{top:24px;right:24px;animation:leaf-drift 2.7s ease-in-out both}
-.intro-wordmark{font-size:clamp(48px,10vw,68px);line-height:1.2;letter-spacing:-3.8px;font-weight:650;color:#f1f6ef;animation:wordmark-reveal .7s .7s ease-out both}
+.intro-sun{position:absolute;width:46px;height:46px;border:1px solid #d5ddaa;border-radius:50%;top:12px;left:206px;background:#c8d89a12;animation:sun-rise 2s ease-out both}
+.intro-tree{bottom:13px;left:89px;transform-origin:50% 94%;animation:tree-sway 3s ease-in-out both}
+.intro-grass{bottom:8px;transform-origin:50% 100%;animation:grass-sway 3s ease-in-out both}
+.intro-grass-left{left:24px}.intro-grass-right{right:22px}
+.intro-rabbit{bottom:14px;right:89px;animation:rabbit-hop 2.1s .2s ease-in-out both}
+.intro-bird{top:18px;left:27px;animation:bird-pass 3s ease-in-out both}
+.intro-leaf{top:24px;right:24px;animation:leaf-drift 3s ease-in-out both}
+.intro-logo-stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:wordmark-reveal 1s 3.05s ease-out both}
+.intro-wordmark{font-size:clamp(48px,10vw,68px);line-height:1.2;letter-spacing:-3.8px;font-weight:650;color:#f1f6ef}
 .intro-wordmark span{color:#b4e7d0}
-.intro-tagline{margin-top:18px;font-size:9px;letter-spacing:3px;color:#c2d8c8;animation:wordmark-reveal .7s 1.05s ease-out both}
-@keyframes intro-exit{0%,83%{opacity:1}100%{opacity:0}}
-@keyframes sun-rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes landscape-reveal{from{opacity:0;transform:translateY(8px)}to{opacity:.55;transform:none}}
-@keyframes tree-sway{0%{opacity:0;transform:rotate(-3deg) scale(.97)}20%{opacity:1}45%{transform:rotate(2deg) scale(1)}78%{transform:rotate(-1.5deg)}100%{opacity:1;transform:rotate(0)}}
-@keyframes grass-sway{0%{opacity:0;transform:rotate(-5deg)}25%{opacity:1}50%{transform:rotate(6deg)}80%{transform:rotate(-3deg)}100%{opacity:1;transform:rotate(0)}}
-@keyframes rabbit-hop{0%{opacity:0;transform:translateX(16px)}30%{opacity:1;transform:translate(7px,-5px)}60%{transform:translate(0,0)}78%{transform:translateY(-3px)}100%{opacity:1;transform:none}}
-@keyframes bird-pass{0%{opacity:0;transform:translate(-15px,15px) rotate(-8deg)}20%{opacity:1}55%{transform:translate(16px,-8px) rotate(4deg)}100%{opacity:1;transform:translate(39px,-4px) rotate(0)}}
-@keyframes leaf-drift{0%{opacity:0;transform:translate(0,-10px) rotate(-22deg)}20%{opacity:1}55%{transform:translate(-15px,13px) rotate(15deg)}100%{opacity:1;transform:translate(-7px,27px) rotate(-6deg)}}
-@keyframes wordmark-reveal{from{opacity:0;transform:translateY(9px);filter:blur(3px)}to{opacity:1;transform:none;filter:blur(0)}}
-@media(max-width:420px){.intro-center{padding:20px 25px}.intro-landscape{width:310px;transform:scale(.92);margin-bottom:9px}.intro-tagline{font-size:8px;letter-spacing:2.4px}}
+.intro-tagline{margin-top:18px;font-size:9px;letter-spacing:3px;color:#c2d8c8;animation:tagline-reveal .6s 3.4s ease-out both}
+@keyframes nature-sequence{0%{opacity:0;transform:translateY(12px)}28%{opacity:1;transform:none}44%{opacity:1;transform:none}60%,100%{opacity:0;transform:translateY(-5px)}}
+@keyframes intro-exit{0%,92%{opacity:1}100%{opacity:0}}
+@keyframes sun-rise{from{transform:translateY(17px)}to{transform:none}}
+@keyframes tree-sway{0%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}100%{transform:rotate(-1deg)}}
+@keyframes grass-sway{0%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}100%{transform:rotate(-2deg)}}
+@keyframes rabbit-hop{0%,35%{transform:translateX(8px)}60%{transform:translate(3px,-4px)}85%,100%{transform:none}}
+@keyframes bird-pass{0%{transform:translate(-10px,10px) rotate(-5deg)}55%{transform:translate(12px,-5px) rotate(2deg)}100%{transform:translate(29px,-2px)}}
+@keyframes leaf-drift{0%{transform:translate(0,-8px) rotate(-16deg)}55%{transform:translate(-12px,10px) rotate(10deg)}100%{transform:translate(-6px,22px) rotate(-5deg)}}
+@keyframes wordmark-reveal{from{opacity:0;transform:translateY(7px);filter:blur(2px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes tagline-reveal{from{opacity:0}to{opacity:1}}
+@media(max-width:420px){.intro-landscape{width:310px;transform-origin:center}.intro-tagline{font-size:8px;letter-spacing:2.4px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.nature-intro{display:none!important}}
