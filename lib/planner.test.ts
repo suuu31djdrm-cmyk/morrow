@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {scheduleWeek,scheduleTheme,validatePlan,DEFAULT_AVAILABILITY,minutes,type Theme,type Plan} from './planner.ts';
+import {scheduleWeek,scheduleTheme,validatePlan,goalProgress,weekProgress,DEFAULT_AVAILABILITY,minutes,type Theme,type Plan} from './planner.ts';
 const week='2026-10-12';
 const theme:Theme={id:'a',week,title:'集中する',activity:'制作',hours:3,priority:1,energy:'high'};
 test('concentrated work fits peak time, requested hours, no overlapping events',()=>{const {plans}=scheduleWeek([theme],[],DEFAULT_AVAILABILITY,week);assert.equal(plans.reduce((s,p)=>s+p.hours,0),3);for(const p of plans){assert.ok(minutes(p.time)>=360&&minutes(p.time)+p.hours*60<=720);assert.equal(validatePlan(p,plans),'')}});
@@ -27,4 +27,12 @@ test('editing a theme replaces its suggestions only; manual edits still count to
 });
 test('no remaining time saves no invalid events and reports the full unscheduled goal',()=>{
  const result=scheduleTheme(theme,[],DEFAULT_AVAILABILITY,new Date('2026-10-19T01:00:00'));assert.equal(result.count,0);assert.equal(result.unplaced[0].hours,3);
+});
+test('progress counts only completed work in the goal week and caps at 100 percent',()=>{
+ const p:Plan={id:'done',date:week,time:'09:00',hours:1,title:'done',cat:'side',energy:'high',themeId:'a',completed:true};
+ assert.equal(goalProgress(theme,[p]).percent,33);assert.equal(weekProgress([theme],[p,{...p,id:'future',date:'2026-11-02',hours:20}]).percent,33);assert.equal(goalProgress(theme,[{...p,hours:10}]).percent,100);assert.equal(goalProgress(theme,[{...p,completed:false}]).percent,0);
+});
+test('completed automatic events survive rebalancing',()=>{
+ const done:Plan={id:'done',date:'2026-10-17',time:'09:00',hours:1,title:'done',cat:'side',energy:'high',themeId:'a',origin:'suggestion',completed:true};
+ assert.ok(scheduleWeek([theme],[done],DEFAULT_AVAILABILITY,week).plans.includes(done));assert.ok(scheduleTheme(theme,[done],DEFAULT_AVAILABILITY,new Date('2026-10-17T14:00:00')).plans.includes(done));
 });

@@ -1,6 +1,6 @@
 export type Energy='high'|'medium'|'low';
 export type Theme={id:string;week:string;title:string;activity:string;hours:number;priority:number;energy:Energy};
-export type Plan={id:string;date:string;time:string;hours:number;title:string;cat:string;energy:Energy;themeId?:string;origin?:'suggestion'|'manual'};
+export type Plan={id:string;date:string;time:string;hours:number;title:string;cat:string;energy:Energy;themeId?:string;origin?:'suggestion'|'manual';completed?:boolean};
 export type Availability={weekdayStart:string;weekdayEnd:string;weekendStart:string;weekendEnd:string;peak:'morning'|'afternoon'|'evening'};
 export type PlannerState={plans:Plan[];weekThemes:Theme[];availability:Availability};
 export const DEFAULT_AVAILABILITY:Availability={weekdayStart:'19:00',weekdayEnd:'22:00',weekendStart:'09:00',weekendEnd:'18:00',peak:'morning'};
@@ -27,7 +27,7 @@ export function validatePlan(plan:Plan,others:Plan[]){
 }
 export function scheduleWeek(themes:Theme[],plans:Plan[],a:Availability,week:string,options:{preserveExisting?:boolean;now?:Date}={}){
  const error=availabilityError(a);if(error)throw new Error(error);
- const kept=options.preserveExisting?plans:plans.filter(p=>!inWeek(p.date,week)||p.origin!=='suggestion');const generated:Plan[]=[],unplaced:{title:string;hours:number}[]=[];
+ const kept=options.preserveExisting?plans:plans.filter(p=>!inWeek(p.date,week)||p.origin!=='suggestion'||p.completed);const generated:Plan[]=[],unplaced:{title:string;hours:number}[]=[];
  const peak={morning:[360,720],afternoon:[720,1080],evening:[1080,1440]}[a.peak];
  for(const theme of themes.filter(t=>t.week===week).slice().sort((a,b)=>a.priority-b.priority)){
  let remain=Math.max(0,Math.round((theme.hours-sumHours(kept.filter(p=>inWeek(p.date,week)&&p.themeId===theme.id)))*60));const usedDays:Record<number,number>={};
@@ -42,6 +42,16 @@ export function eventLayout(plans:Plan[]){const sorted=plans.filter(p=>p.time).s
 
 export function scheduleTheme(theme:Theme,plans:Plan[],availability:Availability,now:Date){
  // Replace only this theme's untouched suggestions. Manual edits and other themes stay fixed.
- const kept=plans.filter(p=>!(p.themeId===theme.id&&p.origin==='suggestion'));
+ const kept=plans.filter(p=>!(p.themeId===theme.id&&p.origin==='suggestion'&&!p.completed));
  return scheduleWeek([theme],kept,availability,theme.week,{preserveExisting:true,now});
+}
+
+export function goalProgress(theme:Theme,plans:Plan[]){
+ const hours=sumHours(plans.filter(p=>p.themeId===theme.id&&p.completed&&inWeek(p.date,theme.week)));
+ const completedHours=Math.min(theme.hours,hours);
+ return {completedHours,percent:theme.hours>0?Math.min(100,Math.round(completedHours/theme.hours*100)):0};
+}
+export function weekProgress(themes:Theme[],plans:Plan[]){
+ const target=themes.reduce((sum,t)=>sum+t.hours,0),completedHours=themes.reduce((sum,t)=>sum+goalProgress(t,plans).completedHours,0);
+ return {completedHours,percent:target>0?Math.min(100,Math.round(completedHours/target*100)):0};
 }
