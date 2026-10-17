@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test lib/planner.test.ts lib/i18n.test.ts lib/auth-policy.test.ts"
+    "test": "node --experimental-strip-types --test lib/planner.test.ts lib/i18n.test.ts lib/auth-policy.test.ts lib/auth-input.test.ts"
   },
   "engines": {
     "node": ">=22.0.0"

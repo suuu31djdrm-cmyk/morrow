@@ -1,0 +1,5 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {sendCodeSchema,verifyCodeSchema} from './auth-input.ts';
+test('email OTP requires an explicit signup or login intent',()=>{for(const intent of ['signup','login'])assert.equal(sendCodeSchema.parse({intent,identifier:'person@example.com'}).intent,intent);for(const intent of [undefined,'google','sms'])assert.equal(sendCodeSchema.safeParse({intent,identifier:'person@example.com'}).success,false)});
+test('OTP rejects phone numbers, passwords, provider injection and malformed codes',()=>{assert.ok(verifyCodeSchema.safeParse({identifier:'person@example.com',token:'123456'}).success);for(const body of [{intent:'signup',identifier:'+819012345678'},{intent:'login',identifier:'person@example.com',password:'secret'},{intent:'login',identifier:'person@example.com',provider:'google'}])assert.equal(sendCodeSchema.safeParse(body).success,false);for(const token of ['123','abcdef','123456789'])assert.equal(verifyCodeSchema.safeParse({identifier:'person@example.com',token}).success,false)});
