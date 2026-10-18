@@ -36,3 +36,4 @@ test('completed automatic events survive rebalancing',()=>{
  const done:Plan={id:'done',date:'2026-10-17',time:'09:00',hours:1,title:'done',cat:'side',energy:'high',themeId:'a',origin:'suggestion',completed:true};
  assert.ok(scheduleWeek([theme],[done],DEFAULT_AVAILABILITY,week).plans.includes(done));assert.ok(scheduleTheme(theme,[done],DEFAULT_AVAILABILITY,new Date('2026-10-17T14:00:00')).plans.includes(done));
 });
+test('higher priorities get scarce slots first regardless of input order',()=>{const top={...theme,id:'top',hours:40,energy:'low' as const,priority:1};const later={...top,id:'later',priority:3};const result=scheduleWeek([later,top],[],DEFAULT_AVAILABILITY,week);assert.ok(result.plans.some(p=>p.themeId==='top'));assert.equal(result.plans.some(p=>p.themeId==='later'),false);assert.ok(result.unplaced.some(t=>t.title===later.title))});
