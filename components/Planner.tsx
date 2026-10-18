@@ -3,6 +3,8 @@ import Image from 'next/image';
 import NatureIntro from './NatureIntro';
 import CalendarView from './CalendarView';
 import Dashboard from './Dashboard';
+import {withStarterGoals} from '@/lib/starter-goals';
+import {detectLocale} from '@/lib/i18n';
 import {useAccount} from './AuthGate';
 import {useLocale} from '@/lib/use-locale';
 import {useState,useEffect,useRef,type FormEvent,type CSSProperties} from 'react';
@@ -30,7 +32,7 @@ export default function Planner(){
  const [editingTheme,setEditingTheme]=useState<Theme|undefined>(),[formKey,setFormKey]=useState(0),[planEditor,setPlanEditor]=useState<{plan?:Plan;date:string;time:string}|null>(null),[feedback,setFeedback]=useState(''),[focusTime,setFocusTime]=useState<number|null>(null);
  useEffect(()=>{
   const now=new Date();setToday(dateKey(now));setSelectedDay((now.getDay()+6)%7);
-  if(account.localDemo){try{setData(readState());setLoaded(true)}catch(e){setStorageError((e as Error).message)}}else{fetch('/api/planner',{cache:'no-store'}).then(async response=>{const result=await response.json();if(!response.ok)throw new Error(result.error||'dataLoadFailed');return result.state}).then(state=>{setData(state||emptyState());setLoaded(true)}).catch(e=>{setStorageError(e.message)});/* Parent AuthGate remounts the planner on account changes. */}
+  if(account.localDemo){try{setData(withStarterGoals(readState(),detectLocale(navigator.languages),now));setLoaded(true)}catch(e){setStorageError((e as Error).message)}}else{fetch('/api/planner',{cache:'no-store'}).then(async response=>{const result=await response.json();if(!response.ok)throw new Error(result.error||'dataLoadFailed');return result.state}).then(state=>{setData(withStarterGoals(state||emptyState(),detectLocale(navigator.languages),now));setLoaded(true)}).catch(e=>{setStorageError(e.message)});/* Parent AuthGate remounts the planner on account changes. */}
   const readScreen=()=>{const key=window.location.hash.slice(1);setScreen((['dashboard','calendar','create','settings'] as string[]).includes(key)?key as Screen:'dashboard')};readScreen();window.addEventListener('hashchange',readScreen);window.addEventListener('popstate',readScreen);return()=>{window.removeEventListener('hashchange',readScreen);window.removeEventListener('popstate',readScreen)};
  },[]);
  useEffect(()=>{if(!loaded)return;const timer=setTimeout(()=>{if(account.localDemo){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));setStorageError('')}catch{setStorageError('dataSaveFailed')}}else{const snapshot=JSON.stringify(data);saveQueue.current=saveQueue.current.catch(()=>{}).then(async()=>{const response=await fetch('/api/planner',{method:'PUT',headers:{'Content-Type':'application/json'},body:snapshot});if(!response.ok){setStorageError('dataSaveFailed');return}setStorageError('')}).catch(()=>setStorageError('dataSaveFailed'))}},700);return()=>clearTimeout(timer)},[data,loaded,account.localDemo]);

@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {withStarterGoals} from './starter-goals.ts';
+import {plannerStateSchema} from './state-schema.ts';
+import {DEFAULT_AVAILABILITY,type PlannerState} from './planner.ts';
+const empty=():PlannerState=>({plans:[],weekThemes:[],availability:{...DEFAULT_AVAILABILITY}});
+const now=new Date('2026-10-19T08:00:00');
+test('creates only three generic editable goals in the current week and validates saved shape',()=>{const s=withStarterGoals(empty(),'ja',now);assert.deepEqual(s.weekThemes.map(t=>t.title),['副業を完了する','他案件を探す','ポートフォリオを完成する']);assert.ok(s.weekThemes.every(t=>t.week==='2026-10-19'));assert.ok(s.plans.length);assert.equal(plannerStateSchema.safeParse(s).success,true);assert.equal(s.starterGoalsInitialized,true)});
+test('preserves existing data and does not restore deleted starter goals',()=>{const s=withStarterGoals(empty(),'ja',now);assert.equal(withStarterGoals(s,'ja',now),s);const cleared={...s,plans:[],weekThemes:[]};assert.equal(withStarterGoals(cleared,'ja',now),cleared);const existing={...s,starterGoalsInitialized:undefined};assert.deepEqual(withStarterGoals(existing,'ja',now).weekThemes,s.weekThemes)});
+test('respects preferred language and reports missing time through unplanned targets',()=>{const s=withStarterGoals(empty(),'en',new Date('2026-10-18T23:59:00'));assert.equal(s.weekThemes[0].title,'Finish freelance work');assert.equal(s.plans.length,0);assert.equal(s.weekThemes.length,3)});
