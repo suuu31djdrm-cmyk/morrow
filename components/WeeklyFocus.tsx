@@ -1,14 +1,14 @@
 'use client';
 import Image from 'next/image';
 import {useLocale} from '@/lib/use-locale';
-import {weeklyFocus} from '@/lib/focus';
+import {weeklyFocus,weeklyDigest} from '@/lib/focus';
 import type {Plan,Theme} from '@/lib/planner';
 export default function WeeklyFocus({themes,plans,onPriority,onRebalance,onEdit}:{themes:Theme[];plans:Plan[];onPriority:(id:string,priority:number)=>void;onRebalance:()=>void;onEdit:(theme:Theme)=>void}){
  const {tr}=useLocale();const rows=weeklyFocus(themes,plans);if(!rows.length)return null;
- const n=(v:number)=>Number(v.toFixed(1));
+ const digest=weeklyDigest(themes,plans);const n=(v:number)=>Number(v.toFixed(1));
  return <section className="card weekly-focus" aria-labelledby="focus-title">
   <div className="focus-heading"><div><p className="eyebrow">MAKE ROOM FOR WHAT MATTERS</p><h2 id="focus-title">{tr('focusTitle')}</h2><p className="description">{tr('focusHint')}</p></div><Image src="/nature/blossom.png" alt="" width={48} height={60}/></div>
-  <div className="focus-lead"><span>{tr('focusFirst')}</span><strong>{rows[0].theme.title}</strong></div>
+  <aside className="weekly-digest" aria-label={tr('digestTitle')}><h3>{tr('digestTitle')}</h3><p>{tr('digestHours',{target:n(digest.target),scheduled:n(digest.scheduled),completed:n(digest.completed)})}</p><p>{digest.first?tr('digestFirst',{title:digest.first}):tr('digestAllDone')}</p><p>{digest.unplaced>0?tr('digestUnplaced',{hours:n(digest.unplaced)}):tr('digestAllScheduled')}</p><small>{tr('digestHint')}</small></aside><div className="focus-lead"><span>{tr('focusFirst')}</span><strong>{rows[0].theme.title}</strong></div>
   <div className="energy-allocation" aria-label={tr('energyAllocation')}>{rows.map(({theme,share},i)=><span key={theme.id} className={`focus-color-${i%4}`} style={{flexGrow:share}} title={`${theme.title}: ${Math.round(share)}%`}/>)}</div>
   <p className="focus-caption">{tr('energyEstimate')}</p>
   <div className="focus-goals">{rows.map(({theme,share,planned,remaining},i)=><article className="focus-goal" key={theme.id}>

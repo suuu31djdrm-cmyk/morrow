@@ -10,3 +10,9 @@ export function weeklyFocus(themes:Theme[],plans:Plan[]){
   return {theme:t,share:total?t.hours*weights[t.energy]/total*100:0,planned,remaining:Math.max(0,t.hours-planned)};
  });
 }
+
+export function weeklyDigest(themes:Theme[],plans:Plan[]){
+ const rows=weeklyFocus(themes,plans);
+ const completed=(t:Theme)=>Math.min(t.hours,plans.filter(p=>p.themeId===t.id&&p.completed&&inWeek(p.date,t.week)).reduce((s,p)=>s+p.hours,0));
+ return {target:themes.reduce((s,t)=>s+t.hours,0),scheduled:rows.reduce((s,r)=>s+Math.min(r.planned,r.theme.hours),0),completed:themes.reduce((s,t)=>s+completed(t),0),unplaced:rows.reduce((s,r)=>s+r.remaining,0),first:rows.find(r=>completed(r.theme)<r.theme.hours)?.theme.title||null};
+}
